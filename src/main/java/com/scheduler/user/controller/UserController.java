@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,14 +26,14 @@ public class UserController {
         try {
             List<UserDto> users = userService.findAllUsers()
                     .stream()
-                    .map((userEntity -> UserConverter.convertUserEntityToDto(userEntity)))
+                    .map(UserConverter::convertUserEntityToDto)
                     .collect(Collectors.toList());
 
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
-            return new ResponseEntity<List<UserDto>>(users, HttpStatus.OK);
+            return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -45,7 +44,7 @@ public class UserController {
         try {
             List<UserDto> users = userService.findAllUsersByStatus(UserStatus.fromInteger(userStatus))
                     .stream()
-                    .map((userEntity -> UserConverter.convertUserEntityToDto(userEntity)))
+                    .map(UserConverter::convertUserEntityToDto)
                     .collect(Collectors.toList());
 
             if (users.isEmpty()) {
@@ -64,7 +63,7 @@ public class UserController {
             UserEntity userEntity = UserConverter.convertUserDtoToEntity(userDto);
             UserDto savedUser = UserConverter.convertUserEntityToDto(userService.saveUser(userEntity));
 
-            return new ResponseEntity<>(savedUser, HttpStatus.OK);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
